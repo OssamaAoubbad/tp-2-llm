@@ -1,0 +1,19 @@
+[project]
+name = "tp2-sarcasme"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "arabert>=1.0.1",
+    "datasets>=5.1.0",
+    "emoji>=1.4.2",
+    "evaluate>=0.4.6",
+    "gensim>=4.4.0",
+    "matplotlib>=3.10.9",
+    "pandas>=2.3.3",
+    "pyarabic>=0.6.15",
+    "scikit-learn>=1.7.2",
+    "torch>=2.14.1",
+    "transformers>=5.20.1",
+]
