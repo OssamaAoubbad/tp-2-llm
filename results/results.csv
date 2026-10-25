@@ -1,2 +1,5 @@
 model,preprocessing,seed,threshold,f1_val,prauc_val,macrof1_val,f1_test,prauc_test,macrof1_test,train_time_s,trained_params
 tfidf_lr_balanced,norm,0,0.5421,0.5148,0.5206,0.706,,,,10.7,135434
+camelbert_sent_neg_rule,clean,0,0.9492,0.4929,0.4735,0.6842,,,,0,0
+camelbert_sent_neg_rule,clean,0,0.9492,0.4929,0.4735,0.6842,,,,0,0
+camelbert_sent_neg_rule,clean,0,0.9492,0.4929,0.4735,0.6842,,,,0,0
