@@ -31,17 +31,23 @@ def best_threshold(y, p):
 
 
 def prepare_texts(df, model_name):
+    """AraBERT : préprocesseur officiel (emojis gardés). MARBERT : texte 'clean' tel quel."""
     if "arabert" in model_name:
         from arabert.preprocess import ArabertPreprocessor
-        pre = ArabertPreprocessor(model_name=model_name, keep_emojis=True)
+        try:   # on essaie de conserver aussi les allongements (indice du sarcasme)
+            pre = ArabertPreprocessor(model_name=model_name, keep_emojis=True,
+                                      remove_non_digit_repetition=False)
+        except TypeError:
+            pre = ArabertPreprocessor(model_name=model_name, keep_emojis=True)
         return [pre.preprocess(t) for t in df["clean"]]
-    return df["clean"].tolist()          # MARBERT : texte sans artefact uniquement
+    return df["clean"].tolist()
 
 
 def make_loader(tok, texts, y_s, y_t, bs, shuffle):
     enc = tok(texts, truncation=True, max_length=128)
     items = [dict(input_ids=enc["input_ids"][i], y_s=int(y_s[i]), y_t=int(y_t[i]))
              for i in range(len(texts))]
+
     def collate(b):
         L = max(len(x["input_ids"]) for x in b)
         ids = torch.full((len(b), L), tok.pad_token_id)
@@ -49,6 +55,7 @@ def make_loader(tok, texts, y_s, y_t, bs, shuffle):
             ids[i, :len(x["input_ids"])] = torch.tensor(x["input_ids"])
         return (ids, (ids != tok.pad_token_id).long(),
                 torch.tensor([x["y_s"] for x in b]), torch.tensor([x["y_t"] for x in b]))
+
     return DataLoader(items, batch_size=bs, shuffle=shuffle, collate_fn=collate)
 
 
@@ -97,13 +104,13 @@ def run(model_name, seed, multitask=False, lam=0.5, epochs=4, lr=2e-5, bs=32,
     best = dict(f1=-1); bad = 0; t0 = time.time()
     for ep in range(epochs):
         model.train()
-        for ids, mask, ys, yt_s in tr_l:
-            ids, mask, ys, yt_s = ids.to(dev), mask.to(dev), ys.to(dev), yt_s.to(dev)
+        for ids, mask, ys, ytt in tr_l:
+            ids, mask, ys, ytt = ids.to(dev), mask.to(dev), ys.to(dev), ytt.to(dev)
             with torch.autocast("cuda", dtype=torch.float16, enabled=dev == "cuda"):
                 ls, lt = model(ids, mask)
                 loss = ce_s(ls.float(), ys)
                 if multitask:
-                    loss = loss + lam * ce_t(lt.float(), yt_s)
+                    loss = loss + lam * ce_t(lt.float(), ytt)
             opt.zero_grad()
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
@@ -114,7 +121,7 @@ def run(model_name, seed, multitask=False, lam=0.5, epochs=4, lr=2e-5, bs=32,
         thr, f1v = best_threshold(yv, pv)
         print(f"epoch {ep+1} | F1 val={f1v:.4f} | seuil={thr:.3f} | loss={loss.item():.3f}")
         if f1v > best["f1"]:
-            # sélection faite UNIQUEMENT sur val ; les probas test sont juste stockées
+            # la sélection se fait UNIQUEMENT sur val ; les probas test sont seulement stockées
             best = dict(f1=f1v, thr=thr, pv=pv, pt=predict(model, te_l, dev), ep=ep + 1)
             bad = 0
         else:
