@@ -1,0 +1,2 @@
+model,preprocessing,seed,threshold,f1_val,prauc_val,macrof1_val,f1_test,prauc_test,macrof1_test,train_time_s,trained_params
+tfidf_lr_balanced,norm,0,0.5421,0.5148,0.5206,0.706,,,,10.7,135434
