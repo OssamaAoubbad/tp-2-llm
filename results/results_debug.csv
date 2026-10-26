@@ -1,0 +1,2 @@
+model,preprocessing,seed,threshold,f1_val,prauc_val,macrof1_val,f1_test,prauc_test,macrof1_test,train_time_s,trained_params
+st_bert-base-arabertv02-twitter,arabert_pre,0,0.4552,0.45,0.3425,0.6,0.3256,0.3379,0.4922,142.5,135194882
