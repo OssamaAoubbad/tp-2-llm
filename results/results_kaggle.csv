@@ -11,3 +11,4 @@ mt_bert-base-arabertv02-twitter_lam0.3,arabert_pre,2,0.7983,0.6904,0.7154,0.8115
 mt_bert-base-arabertv02-twitter_lam0.5,arabert_pre,0,0.6795,0.6875,0.7153,0.8098,0.5994,0.6448,0.7259,184.4,135197189
 mt_bert-base-arabertv02-twitter_lam0.5,arabert_pre,1,0.818,0.6989,0.7161,0.8161,0.6136,0.639,0.7299,180.7,135197189
 mt_bert-base-arabertv02-twitter_lam0.5,arabert_pre,2,0.7277,0.6876,0.7191,0.8072,0.6201,0.6529,0.7311,181.0,135197189
+mt_bert-base-arabertv02-twitter_lam1.0,arabert_pre,0,0.6321,0.6945,0.7155,0.8134,0.61,0.6492,0.7305,184.3,135197189
